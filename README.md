@@ -1,4 +1,4 @@
-Proyecto final para la materia de Pruebas de Software.
+#Proyecto Final: Calidad y Pruebas de software
 
 ## Descripción
 - Conexión a una API de libros
