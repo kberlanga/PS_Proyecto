@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from interface_book import APIService,Book,APIServiceExtra
-from DataBase import DataBase
+from DataBase import DataBase,save
 import requests
 import json
 
@@ -100,12 +100,12 @@ class APIConnection(APIService):
                             else:
                                 pdf = ''
 
+
                     # Sólo se guardan los libros que contengan todos los datos, a excepción del subtítulo
                     if title != '' and authors != '' and publisher != '' and publishedDate != '' and description != '' and isbn_10 != '' and numberPages != '' and categories !='' and image != '' and link != '' and pdf != '':
                         # Aquí se crearán los objetos y se agregan a la lista de libros que va a regresar esta función
                         local_book = localBook(title, subtitle, authors, publisher, publishedDate, description, isbn_10, numberPages, categories, image, link, pdf, weight)
                         list_books.append(local_book)
-
 
             return list_books
 
@@ -130,13 +130,14 @@ class ServiceExtra(APIServiceExtra):
 if __name__ == '__main__':
     word = input("Search: ")
     #print(getBook(word))
-    sqlite = DataBase()
+    sqlite = DataBase("db_books.db")
     extra = ServiceExtra()
     lista = APIConnection().getBook(word, extra)
-    for l in lista:
-        print(l)
-        print('\n')
+    if lista != None:
+        for l in lista:
+            print(l)
+            print('\n')
 
-    #print(sqlite.SaveBook(lista[2]))
+    #print(save(sqlite, lista[1]))
     #print(sqlite.ShowBook(lista[1]))
     #print(sqlite.DeleteBook(lista[2]))

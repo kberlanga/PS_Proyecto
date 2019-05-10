@@ -3,15 +3,15 @@ import sqlite3
 
 class DataBase(DBService):
 
-    def __init__(self):
-        self.connection = sqlite3.connect("db_books.db")
+    def __init__(self, file):
+        self.connection = sqlite3.connect(file)
 
     def CreateTable(self):
         # Se crea la base de datos
         cursor = self.connection.cursor()
         try:
             # Se verifica que la tabla no exista. Se crea la tabla
-            self.connection.execute("""CREATE TABLE IF NOT EXISTS books (id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cursor.execute("""CREATE TABLE IF NOT EXISTS books (id INTEGER PRIMARY KEY AUTOINCREMENT,
                                       isbn text,
                                       title text,
                                       subtitle text,
@@ -37,8 +37,8 @@ class DataBase(DBService):
 
     def SaveBook(self, book):
         # Se verifica el resultado de la consulta
-        if type(book) is str: # Si es un string, quiere decir que la solicitud a la API falló
-            return "ERROR AL AGREGAR EL LIBRO A LA TABLA. VERIFIQUE QUE EL NOMBRE DEL LIBRO ESTÉ CORRECTO"
+        #if type(book) is str: # Si es un string, quiere decir que la solicitud a la API falló
+        #    return "ERROR AL AGREGAR EL LIBRO A LA TABLA. VERIFIQUE QUE EL NOMBRE DEL LIBRO ESTÉ CORRECTO"
 
         # Se hace la conexión a la base de datos
         cursor = self.connection.cursor()
@@ -50,20 +50,36 @@ class DataBase(DBService):
 
         if isbn is None:
             # Si el ibsn=None, se inserta el libro
-            parametros = (
-            book.isbn_10, book.title,
-            book.subtitle,
-            ", ".join(book.authors) if book.authors !='' else book.authors, book.publisher, book.publishedDate,
-            book.description, book.numberPages, ", ".join(book.categories) if book.categories !='' else book.categories,
-            book.image, book.link, 1 if book.pdf == True else 0, book.weight, book.numberPages*.70)
-            if cursor.execute( """INSERT INTO books VALUES(null,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""", parametros):
+            parametros = {
+            'ISBN':book.isbn_10,
+            'TITLE': book.title,
+            'SUBTITLE':book.subtitle,
+            'AUTHORS': ", ".join(book.authors) if book.authors !='' else book.authors,
+            'PUBLISHER': book.publisher,
+            'DATE':book.publishedDate,
+            'DESCRIPTION': book.description,
+            'PAGES':book.numberPages,
+            'CATEGORIES': ", ".join(book.categories) if book.categories !='' else book.categories,
+            'IMAGE': book.image,
+            'LINK': book.link,
+            'PDF': 1 if book.pdf == True else 0,
+            'WEIGHT': book.weight,
+            'COST': book.numberPages*.70}
+            if cursor.execute( "INSERT INTO books (id, isbn, title, subtitle, authors, publisher, published_date, description, number_pages, categories, image, link, pdf, weight, cost) VALUES(null,:ISBN,:TITLE,:SUBTITLE,:AUTHORS,:PUBLISHER,:DATE,:DESCRIPTION,:PAGES,:CATEGORIES,:IMAGE,:LINK,:PDF,:WEIGHT,:COST);", parametros):
                 print("EL LIBRO {} SE INSERTÓ EXITOSAMENTE A LA BASE DE DATOS".format(book.title))
 
             else:
                 print("ERROR AL INSERTAR EL LIBRO A LA BASE DE DATOS")
+
             self.connection.commit()
             cursor.execute("""SELECT * FROM books WHERE title = :TITLE """, {'TITLE': book.title})
-            return cursor.fetchall()
+            consulta = cursor.fetchall()
+            list_books = []
+            for libro in consulta:
+                book = Book(libro[2], libro[3], libro[4].split(','), libro[5], libro[6], libro[7], libro[1], libro[8], libro[9].split(','), libro[10], libro[11], libro[12], libro[13])
+                list_books.append(book)
+            return list_books
+            self.connection.commit()
             self.connection.close()
         else:
             self.connection.close()
@@ -135,7 +151,7 @@ class DataBase(DBService):
         cursor.execute("""SELECT * FROM books WHERE isbn = '{}'""".format(isbn))
         consulta = cursor.fetchall()
         #book = Book()
-        book = Book(consulta[0][2], consulta[0][3], consulta[0][4], consulta[0][5], consulta[0][6], consulta[0][7], consulta[0][1], consulta[0][8], consulta[0][9], consulta[0][10], consulta[0][11], consulta[0][12], consulta[0][13])
+        book = Book(consulta[0][2], consulta[0][3], consulta[0][4].split(','), consulta[0][5], consulta[0][6], consulta[0][7], consulta[0][1], consulta[0][8], consulta[0][9].split(','), consulta[0][10], consulta[0][11], consulta[0][12], consulta[0][13])
         self.connection.commit()
         self.connection.close()
         return book
@@ -157,22 +173,31 @@ class DataBase(DBService):
         cursor.execute("""SELECT * FROM books""")
         consulta = cursor.fetchall()
         for libro in consulta:
-            book = Book(libro[2], libro[3], libro[4], libro[5], libro[6], libro[7], libro[1], libro[8], libro[9], libro[10], libro[11], libro[12], libro[13])
+            book = Book(libro[2], libro[3], libro[4].split(','), libro[5], libro[6], libro[7], libro[1], libro[8], libro[9].split(','), libro[10], libro[11], libro[12], libro[13])
             list_books.append(book)
-        self.connection.commit()
-        self.connection.close()
         return list_books
 
 
+
+#--------------------------------------------------------------------------------------------#
+def save(db, book):
+    r = db.SaveBook(book)
+    return r
+
+def ShowBooks(db):
+    books = db.ShowAllBooks()
+    return books
 
 
 
 
 if __name__ == '__main__':
     #print(DataBase().ShowBook('1859846661'))
-    #lista = DataBase().ShowAllBooks()
-    #for libro in lista:
-    #    print(libro)
+    db = DataBase("db_books.db")
+    # lista = ShowBooks(db)
+    # for libro in lista:
+    #     print(libro)
+    print(*ShowBooks(db), sep="\n")
 
     #DataBase().DeleteBook(lista[len(lista)-1])
     #print(lista[67])
