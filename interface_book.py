@@ -89,59 +89,59 @@ class Book(object):
 
     def __eq__(self, book):
         if book.title != self.title:
-            #print(book.title, "es diferente a", self.title)
+            print(book.title, "es diferente a", self.title)
             return False
 
         if book.subtitle != self.subtitle:
-            #print(book.subtitle, "es diferente a", self.subtitle)
+            print(book.subtitle, "es diferente a", self.subtitle)
             return False
 
         if book.authors != self.authors:
-            #print(book.authors, "es diferente a", self.authors)
+            print(book.authors, "es diferente a", self.authors)
             return False
 
         if book.publisher != self.publisher:
-            #print(book.publisher, "es diferente a", self.publisher)
+            print(book.publisher, "es diferente a", self.publisher)
             return False
 
         if book.publishedDate != self.publishedDate:
-            #print(book.publishedDate, "es diferente a", self.publishedDate)
+            print(book.publishedDate, "es diferente a", self.publishedDate)
             return False
 
         if book.description != self.description:
-            #print(book.description, "es diferente a", self.description)
+            print(book.description, "es diferente a", self.description)
             return False
 
         if book.isbn_10 != self.isbn_10:
-            #print(book.isbn_10, "es diferente a", self.isbn_10)
+            print(book.isbn_10, "es diferente a", self.isbn_10)
             return False
 
         if book.numberPages != self.numberPages:
-            #print(book.numberPages, "es diferente a", self.numberPages)
+            print(book.numberPages, "es diferente a", self.numberPages)
             return False
 
         if book.categories != self.categories:
-            #print(book.categories, "es diferente a", self.categories)
+            print(book.categories, "es diferente a", self.categories)
             return False
 
         if book.image != self.image:
-            #print(book.image, "es diferente a", self.image)
+            print(book.image, "es diferente a", self.image)
             return False
 
         if book.link != self.link:
-            #print(book.link, "es diferente a", self.link)
+            print(book.link, "es diferente a", self.link)
             return False
 
         if book.pdf != self.pdf:
-            #print(book.pdf, "es diferente a", self.pdf)
+            print(book.pdf, "es diferente a", self.pdf)
             return False
 
         if book.weight != self.weight:
-            #print(book.weight, "es diferente a", self.weight)
+            print(book.weight, "es diferente a", self.weight)
             return False
 
         if book.price != self.price:
-            #print(book.price, "es diferente a", self.price)
+            print(book.price, "es diferente a", self.price)
             return False
 
         return True

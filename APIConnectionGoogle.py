@@ -138,6 +138,6 @@ if __name__ == '__main__':
             print(l)
             print('\n')
 
-    #print(save(sqlite, lista[1]))
+    #print(save(sqlite, lista[0]))
     #print(sqlite.ShowBook(lista[1]))
     #print(sqlite.DeleteBook(lista[2]))
