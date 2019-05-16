@@ -11,3 +11,4 @@ install:
 script:
 - python3 TestDataBase.py
 - python3 TestAPIExtra.py
+- python3 TestAPIGoogle.py
