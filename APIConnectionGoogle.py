@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from interface_book import APIService,Book,APIServiceExtra
-from DataBase import DataBase,save
+from DataBase import DataBase
 import requests
 import json
 
@@ -21,7 +21,6 @@ class APIConnection(APIService):
             return "LA SOLICITUD NO SE EJECUTÓ DE MANERA CORRECTA"
         else: # Si no es así, procedemos a la extracción de los datos
             if response.json()['totalItems'] == 0:
-                print("No existen libros con ese nombre")
                 return None
             else:
                 # Se crea una lista en donde se guardarán los objetos tipo localBook
@@ -100,44 +99,32 @@ class APIConnection(APIService):
                             else:
                                 pdf = ''
 
-
                     # Sólo se guardan los libros que contengan todos los datos, a excepción del subtítulo
                     if title != '' and authors != '' and publisher != '' and publishedDate != '' and description != '' and isbn_10 != '' and numberPages != '' and categories !='' and image != '' and link != '' and pdf != '':
                         # Aquí se crearán los objetos y se agregan a la lista de libros que va a regresar esta función
                         local_book = localBook(title, subtitle, authors, publisher, publishedDate, description, isbn_10, numberPages, categories, image, link, pdf, weight)
                         list_books.append(local_book)
 
+
             return list_books
 
+def get_book(nameBook, className):
+    className.getBook(nameBook)
 
-class ServiceExtra(APIServiceExtra):
+class APIServiceExtra(APIServiceExtra):
 
     def getExtras(self, isbn):
+        """Regresa una lista de información extra que se obtiene de una nueva API.
+        La clase que se conecta a la API implementa esta clase"""
         # Se hace la solicitud de datos a la API
         response = requests.get(url = "https://openlibrary.org/api/books?bibkeys=ISBN:"+str(isbn)+",&jscmd=data&format=json")
 
         # Se revisa que la solicitud se haya realizado correctamente
         try:
-            if response.status_code != 200:
+            if response.status_code != 200 or response.json() == {}:
                 return "HA OCURRIDO UN ERROR"
             else:
                 weight = response.json()["ISBN:"+str(isbn)]['weight']
         except:
             weight = "no identificado"
         return weight
-
-
-if __name__ == '__main__':
-    word = input("Search: ")
-    #print(getBook(word))
-    sqlite = DataBase("db_books.db")
-    extra = ServiceExtra()
-    lista = APIConnection().getBook(word, extra)
-    if lista != None:
-        for l in lista:
-            print(l)
-            print('\n')
-
-    #print(save(sqlite, lista[0]))
-    #print(sqlite.ShowBook(lista[1]))
-    #print(sqlite.DeleteBook(lista[2]))
