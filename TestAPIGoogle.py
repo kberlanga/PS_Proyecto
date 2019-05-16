@@ -66,7 +66,6 @@ class MockTest(unittest.TestCase):
         for entrada, salida in salida_esperadas:
             # comparaciones de la salida real con la esperada
             salida_real = APIConnection().getBook(entrada, APIServiceExtra())
-            #print(*salida_real)
             self.assertEqual(salida, salida_real)
 
 if __name__ == "__main__":
